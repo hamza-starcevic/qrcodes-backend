@@ -1,0 +1,32 @@
+   /app
+        __init__.py
+        main.py  # your FastAPI application instance and routes
+        /api  # your API-related code
+            __init__.py
+            /endpoints  # your endpoint-related code
+                __init__.py
+                user.py  # user endpoints
+                qr_code.py  # QR code generation and reading endpoints
+            /dependencies  # dependency-related code like DB session
+                __init__.py
+            /schemas  # Pydantic models for your application
+                __init__.py
+        /core  # core application configurations, security, settings
+            __init__.py
+            config.py
+            security.py
+        /crud  # CRUD utils
+            __init__.py
+        /db  # database-related code
+            __init__.py
+            base.py  # Base classes and metadata
+            session.py  # DB session management
+            /models  # SQLAlchemy models
+                __init__.py
+                user.py  # user model
+                qr_code.py  # QR code model
+        /tests  # for your test cases
+            __init__.py
+    /migrations  # Alembic migrations
+    /venv  # virtual environment
+    requirements.txt  # project dependencies
