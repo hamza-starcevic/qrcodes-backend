@@ -8,16 +8,25 @@ class UserBase(BaseModel):
     last_name: str
     date_of_birth: date
 
+
 class UserCreate(UserBase):
     password: str
+    role: str
+
 
 class UserLogin(BaseModel):
     email: str
     password: str
 
+
 class UserInDB(UserBase):
     id: UUID4
-    hashed_password: str
+    password: str
+
+
+class UserLoggedIn(UserBase):
+    token: str
+
 
 class User(UserBase):
     pass
