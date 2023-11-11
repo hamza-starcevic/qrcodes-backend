@@ -1,3 +1,7 @@
+Python version:Python 3.12.0
+
+
+
 python -m app.db.db_init =dbsetup
 uvicorn app.main:app --reload
 INSERT INTO users (id, email, first_name, last_name, date_of_birth, password, role)
