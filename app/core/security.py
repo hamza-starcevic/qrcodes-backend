@@ -16,7 +16,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def check_role(headers: Headers, roleToBe):
     role=False
     try:
-        jwt_token = headers.get("Authorization").split(" ")[1]
+        jwt_token=headers.get("Authorization")
+        #check if auth has a space in it
+        if len(jwt_token.split(" "))==2:
+            jwt_token = jwt_token.split(" ")[1]
         decoded = jwt.decode(jwt_token, os.getenv("jwt_secret"), algorithms=["HS256"])
         role = decoded["role"]
     except Exception as e:
