@@ -9,4 +9,6 @@ class PredmetKorisnik(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, unique=True, default=uuid.uuid4)
     predmet_id = Column(UUID, ForeignKey('predmeti.id'), nullable=False)
     korisnik_id = Column(UUID, ForeignKey('users.id'), nullable=False)
+    ime_prezime = Column(String)
+    naziv_predmeta = Column(String)
     role = Column(String, nullable=False)
