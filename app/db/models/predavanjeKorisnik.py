@@ -9,4 +9,5 @@ class PredavanjeKorisnik(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, unique=True, default=uuid.uuid4)
     predavanje_id = Column(UUID, ForeignKey('predavanja.id'), nullable=False)
     korisnik_id = Column(UUID, ForeignKey('users.id'), nullable=False)
-    role = Column(String, nullable=False)
+    ime_prezime = Column(String)
+    naziv_predavanja = Column(String)

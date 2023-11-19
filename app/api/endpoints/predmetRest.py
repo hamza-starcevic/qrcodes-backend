@@ -7,17 +7,17 @@ from app.schemas.predmetSchema import PredmetBase
 from app.services.predmetService import add_korisnik, create_predmet, get_predmeti
 from app.core.security import check_role
 
-router = APIRouter()
+router = APIRouter(tags=["Predmeti"])
 
 #potrebno napraviti logiku za predavanja 
-@router.post("/createPredmet", status_code=status.HTTP_201_CREATED)
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 def createPredmet(predmet: PredmetBase,request: Request, db: Session = Depends(get_db)):
     return create_predmet(predmet = predmet, db=db)
 
-@router.get("/predmeti")
+@router.get("/all")
 def getPredmeti(db: Session = Depends(get_db)):
     return get_predmeti(db=db)
 
-@router.post("/predmet/korisnik")
+@router.post("/korisnik")
 def addKorisnik(content: PredmetKorisnik, db:Session = Depends(get_db)):
     return add_korisnik(content = content, db = db )

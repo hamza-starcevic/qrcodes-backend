@@ -6,16 +6,16 @@ from app.schemas.userSchema import User, UserCreate, UserLogin
 from app.services.userServices import create_user, get_users_by_predmet_id, login_user, get_users
 from app.core.security import check_role
 
-router = APIRouter()
+router = APIRouter(tags=["Users"])
 
 
-@router.post("/createUser", status_code=status.HTTP_201_CREATED)
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 def createUser(user: UserCreate,request: Request, db: Session = Depends(get_db)):
-    if not check_role(headers=request.headers, roleToBe="admin"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-        )
+    # if not check_role(headers=request.headers, roleToBe="admin"):
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="Unauthorized",
+    #     )
     newUser = create_user(user=user, db=db)
     if newUser == None:
         raise HTTPException(
@@ -38,18 +38,18 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     else:
         return loggedUser
     
-@router.get("/users/{token}", status_code=200)
+@router.get("/{token}", status_code=200)
 def getUsers(token: str, db: Session = Depends(get_db)):
 
-    if not check_role({"Authorization":token}, roleToBe="admin"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Unauthorized",
-        )
+    # if not check_role({"Authorization":token}, roleToBe="admin"):
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="Unauthorized",
+    #     )
     users = get_users(db=db)
     return users
 
-@router.get("/studenti/{predmet_id}")
+@router.get("/predmet/{predmet_id}")
 def getUsersByPredmetId(predmet_id: str, db: Session = Depends(get_db)):
     users = get_users_by_predmet_id(predmet_id = predmet_id, db = db)
    
