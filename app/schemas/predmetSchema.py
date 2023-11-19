@@ -6,8 +6,10 @@ class PredmetBase(BaseModel):
     naziv: str
     godina_studija: int
 
-class PredmetCreate(PredmetBase):
+class PredmetInDB(PredmetBase):
     id:UUID4
 
 class Predmet(PredmetBase):
     pass
+
+
