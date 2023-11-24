@@ -7,7 +7,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     const backendUrl = 'http://127.0.0.1:8000';
-
+  
     try {
       const response = await fetch(`${backendUrl}/api/user/login`, {
         method: 'POST',
@@ -16,28 +16,30 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: username,
-          password,
+          email: String(username),
+          password: String(password),
         }),
         credentials: 'include',
       });
-
+  
       if (!response.ok) {
         console.error('Authentication failed. Server returned:', response.status, response.statusText);
         return;
       }
-
+  
       const result = await response.json();
-
-      if (response.status === 200) {
-        const token = result.token;
-
+  
+      if (Array.isArray(result) && result.length > 0) {
+        const user = result[0];
+  
+        const token = user ? user.token : null;
+  
         // Store the token in localStorage or state as needed
         // Example using localStorage:
         localStorage.setItem('authToken', token);
-
+  
         console.log('Login successful! Token:', token);
-
+  
         // Add your logic to redirect or perform additional actions after successful login
       } else {
         console.error('Authentication failed. Unexpected response:', result);
@@ -46,9 +48,10 @@ const Login = () => {
       console.error('Error during login:', error);
     }
   };
+  
 
   return (
-    <div class="Prijava">
+    <div className="Prijava">
       <h2>Prijava</h2>
       <p>Molimo vas da se prijavite kako bi koristili nasu aplikaciju</p>
       <form>
@@ -62,15 +65,15 @@ const Login = () => {
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         <br/>
-        <div class="wrapper">
-        <label class="remember-label">
-          <input class="remember" type="checkbox" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
+        <div className="wrapper">
+        <label className="remember-label">
+          <input className="remember" type="checkbox" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
           Remember me
         </label>
-        <span class="forgot-password">Zaboravili ste lozinku?</span>
+        <span className="forgot-password">Zaboravili ste lozinku?</span>
         </div>
         <br/>
-        <div class="button-wrapper">
+        <div className="button-wrapper">
         <button type="button" onClick={handleLogin}>Login</button></div>
       </form>
     </div>
