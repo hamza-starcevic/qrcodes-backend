@@ -1,10 +1,10 @@
 from pydantic import BaseModel, UUID4
 
 class PredmetKorisnikBase(BaseModel):
-    predmet_id:UUID4
-    korisnik_id:UUID4
-    ime_prezime: str
-    naziv_predmeta: str
+    predmetId:UUID4
+    korisnikId:UUID4
+    imePrezime: str
+    nazivPredmeta: str
     role: str
 
 class PredmetKorisnikInDB(PredmetKorisnikBase):

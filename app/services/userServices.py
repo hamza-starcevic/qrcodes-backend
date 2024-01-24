@@ -18,9 +18,9 @@ load_dotenv()
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = User(
         email=user.email,
-        first_name=user.first_name,
-        last_name=user.last_name,
-        date_of_birth=user.date_of_birth,
+        firstName=user.firstName,
+        lastName=user.lastName,
+        dateOfBirth=user.dateOfBirth,
         password=user.password,
         role=user.role,
     )
@@ -31,9 +31,9 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return userSchema(
         id=db_user.id,
         email=db_user.email,
-        first_name=db_user.first_name,
-        last_name=db_user.last_name,
-        date_of_birth=db_user.date_of_birth,
+        firstName=db_user.first_name,
+        lastName=db_user.last_name,
+        dateOfBirth=db_user.date_of_birth,
     )
 
 
@@ -48,9 +48,9 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
         )
         return UserLoggedIn(
             email=db_user.email,
-            first_name=db_user.first_name,
-            last_name=db_user.last_name,
-            date_of_birth=db_user.date_of_birth,
+            firstName=db_user.first_name,
+            lastName=db_user.last_name,
+            datOfBirth=db_user.date_of_birth,
             token=token,
         )
     else:
@@ -68,10 +68,10 @@ def get_users_by_predmet_id(predmet_id: str,db: Session = Depends(get_db)):
         students_list.append(
             PredmetKorisnikInDB(
                 id = student.id,
-                korisnik_id=student.korisnik_id,
-                predmet_id=student.predmet_id,
-                ime_prezime=student.ime_prezime,
-                naziv_predmeta=student.naziv_predmeta,
+                korisnikId=student.korisnik_id,
+                predmetId=student.predmet_id,
+                imePrezime=student.ime_prezime,
+                nazivPredmeta=student.naziv_predmeta,
                 role=student.role
             )
         )

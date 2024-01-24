@@ -44,10 +44,10 @@ def get_predmeti(db:Session = Depends(get_db)):
 
 def add_korisnik(content: PK, db:Session = Depends(get_db)):
     db_result = PredmetKorisnik(
-        korisnik_id = content.korisnik_id,
-        predmet_id = content.predmet_id,
-        naziv_predmeta =content.naziv_predmeta,
-        ime_prezime = content.ime_prezime,
+        korisnikId = content.korisnik_id,
+        predmetId = content.predmet_id,
+        nazivPredmeta =content.naziv_predmeta,
+        imePrezime = content.ime_prezime,
         role = content.role
     )
     db.add(db_result)
@@ -56,9 +56,22 @@ def add_korisnik(content: PK, db:Session = Depends(get_db)):
 
     return PredmetKorisnikInDB(
         id = db_result.id,
-        korisnik_id = db_result.korisnik_id,
-        predmet_id = db_result.predmet_id,
-        naziv_predmeta = db_result.naziv_predmeta,
-        ime_prezime = db_result.ime_prezime,
+        korisnikId = db_result.korisnik_id,
+        predmetId = db_result.predmet_id,
+        nazivPredmeta = db_result.naziv_predmeta,
+        imePrezime = db_result.ime_prezime,
         role = db_result.role
     )
+
+def getProfesor_Predmet(profesorId: str,db:Session = Depends(get_db)):
+    predmeti = db.query(PredmetKorisnik).filter(PredmetKorisnik.korisnik_id == profesorId).all()
+    predmetList = []
+    for predmet in predmeti:
+        predmetList.append(
+            PredmetInDB(
+                id = predmet.id,
+                naziv = predmet.naziv_predmeta,
+                
+            )
+        )
+    return predmetList

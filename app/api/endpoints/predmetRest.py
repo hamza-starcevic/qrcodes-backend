@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.dependencies import get_db
 from app.schemas.predmetKorisniciSchema import PredmetKorisnik
 from app.schemas.predmetSchema import PredmetBase
-from app.services.predmetService import add_korisnik, create_predmet, get_predmeti
+from app.services.predmetService import add_korisnik, create_predmet, get_predmeti, getProfesor_Predmet
 from app.core.security import check_role
 
 router = APIRouter(tags=["Predmeti"])
@@ -21,3 +21,7 @@ def getPredmeti(db: Session = Depends(get_db)):
 @router.post("/korisnik")
 def addKorisnik(content: PredmetKorisnik, db:Session = Depends(get_db)):
     return add_korisnik(content = content, db = db )
+
+@router.get("/profesor/{profesorId}")
+def getProfesorPredmet(profesorId: str, db: Session = Depends(get_db)):
+    return getProfesor_Predmet(profesorId=profesorId,db=db)

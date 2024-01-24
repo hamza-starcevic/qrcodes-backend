@@ -4,7 +4,6 @@ from datetime import date
 
 class PredmetBase(BaseModel):
     naziv: str
-    godina_studija: int
 
 class PredmetInDB(PredmetBase):
     id:UUID4
