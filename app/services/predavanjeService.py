@@ -21,7 +21,7 @@ def create_predavanje(predavanje: PredavanjeBase, db:Session=Depends(get_db)) ->
     db_predavanje = Predavanje(
         predmet_id = predavanje.predmet_id,
         broj_predavanja = predavanje.broj_predavanja,
-        datum_predavanja = datetime.datetime.now(),
+        datumPredavanja = datetime.datetime.now(),
         qrcode = "To be generated"
     )
     
