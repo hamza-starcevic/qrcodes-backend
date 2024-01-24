@@ -25,6 +25,7 @@ class UserInDB(UserBase):
 
 
 class UserLoggedIn(UserBase):
+    id: UUID4
     token: str
 
 

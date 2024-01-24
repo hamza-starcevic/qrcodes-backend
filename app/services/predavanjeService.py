@@ -87,10 +87,10 @@ def get_all_predavanja(db: Session = Depends(get_db)) -> list[PredavanjeInDB]:
 
 def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_db)) -> PredavanjeKorisnik:
     db_result = PredavanjeKorisnikModel(
-        predavanje_id = content.predavanje_id,
-        korisnik_id = content.korisnik_id,
-        ime_prezime = content.ime_prezime,
-        naziv_predavanja = content.naziv_predavanja
+        predavanjeId = content.predavanje_id,
+        korisnikId = content.korisnik_id,
+        imePrezime = content.ime_prezime,
+        nazivPredavanja = content.naziv_predavanja
     )
     
     db.add(db_result)
@@ -99,8 +99,8 @@ def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_d
     
     return PredavanjeKorisnikInDB(
         id=db_result.id,
-        predavanje_id=db_result.predavanje_id,
-        korisnik_id=db_result.korisnik_id,
-        ime_prezime=db_result.ime_prezime,
-        naziv_predavanja=db_result.naziv_predavanja
+        predavanjeId=db_result.predavanje_id,
+        korisnikId=db_result.korisnik_id,
+        imePrezime=db_result.ime_prezime,
+        nazivPredavanja=db_result.naziv_predavanja
     )

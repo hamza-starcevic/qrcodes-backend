@@ -1,10 +1,17 @@
+from datetime import datetime
+
 from pydantic import BaseModel, UUID4
 
 class PredavanjeKorisnikBase(BaseModel):
-    predavanje_id:UUID4
-    korisnik_id:UUID4
-    ime_prezime: str
-    naziv_predavanja: str
+    predavanjeId:UUID4
+    korisnikId:UUID4
+    imePrezime: str
+    nazivPredavanja: str
+
+class PredavanjeKorisnikSaPredmetom(BaseModel):
+    nazivPredmeta: str
+    brojPredavanja: int
+    datumPredavanja: datetime
 
 class PredavanjeKorisnikInDB(PredavanjeKorisnikBase):
     id:UUID4
