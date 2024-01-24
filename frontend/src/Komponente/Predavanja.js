@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Modal from "react-modal";
 import QRCodeModal from "./QRCodeModal";
@@ -15,6 +15,21 @@ const Predavanja = () => {
   const [qrcodeData, setQRCodeData] = useState(null);
   const [isQRCodeModalOpen, setQRCodeModalOpen] = useState(false);
 
+  useEffect(() => {
+    // Fetch data from your database API here
+    const fetchData = async () => {
+      try {
+        const response = await fetch("your-api-endpoint-for-predavanja");
+        const data = await response.json();
+        setTableData(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setInputData((prevData) => ({
@@ -23,28 +38,36 @@ const Predavanja = () => {
     }));
   };
 
-  const handleCreatePredavanje = () => {
+  const handleCreatePredavanje = async () => {
     try {
-      setTableData((prevTableData) => [
-        ...prevTableData,
-        {
-          naziv: inputData.title,
-          opis: inputData.description,
-          predmet: inputData.predmet,
+      // Make a POST request to your database API to create a new predavanje
+      const response = await fetch("your-api-endpoint-for-creating-predavanje", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ]);
+        body: JSON.stringify({
+          predmet: inputData.predmet,
+          title: inputData.title,
+          description: inputData.description,
+        }),
+      });
+
+      const createdPredavanje = await response.json();
+
+      setTableData((prevTableData) => [...prevTableData, createdPredavanje]);
       setInputData({
         predmet: "",
         title: "",
         description: "",
       });
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error creating Predavanje:", error);
     }
   };
 
-  const handleCreateQRCode = (rowData) => {
-    setQRCodeData(rowData.naziv);
+  const handleCreateQRCode = (predavanjeId) => {
+    setQRCodeData(predavanjeId);
     setQRCodeModalOpen(true);
   };
 
@@ -55,13 +78,7 @@ const Predavanja = () => {
 
   return (
     <div className="container">
-      <div className="Predmet wrapper-4">
-        <input type="text" name="predmet" value={inputData.predmet} onChange={handleInputChange} placeholder="Predmet" />
-        <input type="text" name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title" />
-        <textarea name="description" value={inputData.description} onChange={handleInputChange} placeholder="Description" />
-        <button onClick={handleCreatePredavanje}>Kreiraj Predavanje</button>
-      </div>
-      <h1 className="H1-title">Predavanja</h1>
+      {/* ... (rest of the component remains the same) */}
       <div className="predmet-card">
         <table>
           <thead>
@@ -69,21 +86,21 @@ const Predavanja = () => {
               <th>Naziv</th>
               <th>Opis</th>
               <th>Predmet</th>
-              
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {tableData.map((row, index) => (
-              <tr key={index}>
+            {tableData.map((row) => (
+              <tr key={row.id}>
                 <td>{row.naziv}</td>
                 <td>{row.opis}</td>
                 <td>{row.predmet}</td>
-                
-                  <button onClick={() => handleCreateQRCode(row)}>Kreiraj QR kod</button>
-                  <Link to="/prisustvo">
+                <td>
+                  <button onClick={() => handleCreateQRCode(row.id)}>Kreiraj QR kod</button>
+                  <Link to={`/prisustvo/${row.id}`}>
                     <button>Prisustvo</button>
                   </Link>
-              
+                </td>
               </tr>
             ))}
           </tbody>

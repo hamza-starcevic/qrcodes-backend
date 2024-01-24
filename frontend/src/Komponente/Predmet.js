@@ -1,17 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
 const Predavanja = () => {
   const [inputData, setInputData] = useState({
     naziv: "",
     godina_studija: 0,
+    profesor: "", // Add professor field
     // Other fields...
   });
 
   const [displayData, setDisplayData] = useState({
     naziv: "",
     godina_studija: 0,
+    profesor: "", // Add professor field
     // Other fields...
   });
+
+  const [professors, setProfessors] = useState([]);
+
+  useEffect(() => {
+    // Fetch professors from your API endpoint
+    fetch('your_professors_api_endpoint')
+      .then(response => response.json())
+      .then(data => setProfessors(data))
+      .catch(error => console.error('Error fetching professors:', error));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +53,7 @@ const Predavanja = () => {
       setInputData({
         naziv: "",
         godina_studija: 0,
+        profesor: "", // Add professor field
         // Other fields...
       });
 
@@ -54,6 +67,14 @@ const Predavanja = () => {
     <div className="container">
       <div className="Predmet wrapper-4">
         {/* Input fields for inputData */}
+        <select name="profesor" value={inputData.profesor} onChange={handleInputChange}>
+          <option value="" >Select a Professor</option>
+          {professors.map((professor) => (
+            <option key={professor.id} value={professor.id}>
+              {professor.name}
+            </option>
+          ))}
+        </select>
         <input type="text" name="naziv" value={inputData.naziv} onChange={handleInputChange} placeholder="Naziv" />
         <input type="text" name="godina_studija" value={inputData.godina_studija} onChange={handleInputChange} placeholder="Godina studija" />
         {/* Add more input fields as needed */}
@@ -67,17 +88,15 @@ const Predavanja = () => {
             <tr>
               <th>Naziv</th>
               <th>Godina Studija</th>
-              
+              <th>Profesor</th>
             </tr>
           </thead>
           <tbody>
-            
-              <tr>
-                <td>{displayData.naziv}</td>
-                <td>{displayData.godina_studija}</td>
-              
-              </tr>
-            
+            <tr>
+              <td>{displayData.naziv}</td>
+              <td>{displayData.godina_studija}</td>
+              <td>{displayData.profesor}</td>
+            </tr>
           </tbody>
         </table>
         {/* Display other fields as needed */}
