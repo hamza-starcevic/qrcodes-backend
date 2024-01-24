@@ -100,3 +100,9 @@ def getPrisustvaKorisnika(userId: str, db: Session = Depends(get_db)):
             )
         )
     return zavrsenaPredavanja
+
+
+def get_profil_by_korisnik_id(korisnik_id: str, db: Session = Depends(get_db)):
+    profil = db.query(User).filter(User.id == korisnik_id).first()
+
+    return profil

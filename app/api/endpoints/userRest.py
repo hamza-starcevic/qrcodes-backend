@@ -3,7 +3,7 @@ from fastapi.datastructures import Headers
 from sqlalchemy.orm import Session
 from app.api.dependencies.dependencies import get_db
 from app.schemas.userSchema import User, UserCreate, UserLogin
-from app.services.userServices import create_user, get_users_by_predmet_id, login_user, get_users
+from app.services.userServices import create_user, get_profil_by_korisnik_id, get_users_by_predmet_id, login_user, get_users
 from app.core.security import check_role
 
 router = APIRouter(tags=["Users"])
@@ -54,3 +54,10 @@ def getUsersByPredmetId(predmet_id: str, db: Session = Depends(get_db)):
     users = get_users_by_predmet_id(predmet_id = predmet_id, db = db)
    
     return users
+
+
+@router.get("/profil/{korisnik_id}")
+def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
+    profil = get_profil_by_korisnik_id(korisnik_id = korisnik_id, db = db)
+   
+    return profil
