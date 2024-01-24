@@ -1,7 +1,9 @@
+import datetime
 import uuid
 from sqlalchemy import Column, ForeignKey, Integer, String, Date
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.db_config import Base
+
 
 class Predavanje(Base):
     __tablename__ = "predavanja"
@@ -10,6 +12,5 @@ class Predavanje(Base):
     predmet_id = Column(UUID, ForeignKey('predmeti.id'), nullable=False)
     broj_predavanja = Column(Integer, nullable=False)
     qrcode = Column(String, nullable=True)
-    status= Column(String, nullable=False, default="Nije odrzano")
-    
-    
+    status = Column(String, nullable=False, default="Nije odrzano")
+    datumPredavanja = Column(Date, nullable=False, default=datetime.date)
