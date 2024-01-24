@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnik
 
 from app.schemas.predavanjeSchema import PredavanjeBase
-from app.services.predavanjeService import add_user_predavanje, create_predavanje, generate_qrcode, get_all_predavanja, get_predavanje_by_id
+from app.services.predavanjeService import add_user_predavanje, create_predavanje, generate_qrcode, get_all_predavanja, get_predavanje_by_id, lista_prisutnih
 from app.api.dependencies.dependencies import get_db
 from app.core.security import check_role
 
@@ -72,3 +72,8 @@ def getPredavanjeById(predavanje_id: str, db: Session = Depends(get_db)):
 @router.post("/korisnik")
 def addKorisnikToPredavanje(content: PredavanjeKorisnik, db: Session = Depends(get_db)):
     return add_user_predavanje(content=content, db=db)
+
+
+@router.get("/prisutni/{predavanje_id}")
+def listaPrisustvaPredavanje(predavanje_id: str, db: Session = Depends(get_db)):
+    return lista_prisutnih(predavanje_id=predavanje_id, db=db)
