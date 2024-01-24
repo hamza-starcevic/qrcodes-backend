@@ -5,6 +5,7 @@ from app.db.models.predavanje import Predavanje
 from app.db.models.predavanjeKorisnik import PredavanjeKorisnik as PredavanjeKorisnikModel
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnik, PredavanjeKorisnikInDB
 from app.schemas.predavanjeSchema import PredavanjeBase, PredavanjeInDB
+from app.schemas.userSchema import User
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 from io import BytesIO
@@ -107,3 +108,14 @@ def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_d
         imePrezime=db_result.ime_prezime,
         nazivPredavanja=db_result.naziv_predavanja
     )
+
+
+def lista_prisutnih(predavanje_id: int ,db: Session = Depends(get_db)):
+    listaPredavanje = db.query(PredavanjeKorisnik).filter(PredavanjeKorisnik.predavanjeId == predavanje_id).all()
+    users = []
+    for predavanje_korisnik in listaPredavanje:
+        user = db.query(User).filter(User.id == predavanje_korisnik.korisnik_id).first()
+        if user:
+            users.append(user)
+
+    return users
