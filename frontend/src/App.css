@@ -224,3 +224,153 @@ select {
     background: #FFF;
     box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
 }
+input[type="email"] {
+    display: flex;
+    padding: 10px 2px;
+    align-items: center;
+    gap: 8px;
+    align-self: stretch;
+    margin-top: 16px;
+    border-radius: 8px;
+    border: 1px solid #B5B2B2;
+    background: #FFF;
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+}
+.bigbutton {
+    display: flex;
+   max-width: 360px;
+padding: 16px 48px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: 1px solid #219C4B;
+    background: #00426C;
+    color: white;
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    font-family: Inter;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 20px;
+}
+.content-wrapper {
+    height: 50vh;
+    margin-top: 100px;
+}
+img.pozadinskaSlika {
+    width: 604px;
+    height: auto;
+}
+section.sekundarni {
+    align-items: center;
+    background: #182138;
+    height: 40vh;
+    display: flex;
+}
+.text-wrapper {
+  margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+.text-wrapper-2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #FAF7F7;
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+   border-radius: 48px;
+gap: 32px;
+}
+.big{
+  font-size: 3rem;
+  color: #1E293B;
+  margin: 0px;
+}
+p .text-wrapper, .text-wrapper-2 {
+  font-size: 1.5rem;
+  color: #1E293B;
+  margin-top: 0px;
+}
+section.plava-pozadina {
+    background: #00426C;
+    height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+section.plava-pozadina p {
+    font-size: 1.5rem;
+    color: #E3E7EE;
+    margin-top: 0px;
+}
+section.plava-pozadina .container {
+ display: flex;
+padding: 100px 96px;
+justify-content: center;
+align-items: center;
+gap: 48px;
+align-self: stretch;
+flex-direction: column;
+}
+.zadnji{color: #FFF;
+text-align: center;
+font-family: Lora;
+font-size: 33px;
+font-style: normal;
+font-weight: 700;
+line-height: 40px; /* 121.212% */
+letter-spacing: -0.66px;
+width: 70%;
+}
+.full-height {
+    height: 100%;
+         width: 805px;
+
+}
+.row{
+  display: flex;
+  flex-direction: row;
+
+  justify-content: space-between;
+}
+.card{
+overflow: hidden;
+color: #182138;
+text-overflow: ellipsis;
+font-family: Inter;
+font-size: 24px;
+font-style: normal;
+font-weight: 600;
+line-height: 140%; /* 25.2px */
+margin: 0px;
+}
+.column-left {
+    display: flex;
+    max-width: 100%;
+    align-items: center;
+    align-content: center;
+    gap: 32px;
+    align-self: stretch;
+    flex-wrap: wrap;
+    margin-left: 10%;
+}
+p.title{
+color:  #00426C;
+font-family: Inter;
+font-size: 18px;
+font-style: normal;
+font-weight: 400;
+line-height: 150%;
+text-align: center;
+margin-top: 0;
+}
+.card-1 {
+    width:40%;
+}
