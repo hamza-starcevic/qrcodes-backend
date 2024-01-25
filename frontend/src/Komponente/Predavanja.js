@@ -28,7 +28,7 @@ const Predavanja = () => {
     };
 
     fetchData();
-  }, []); // The empty dependency array ensures that this effect runs only once when the component mounts
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +41,7 @@ const Predavanja = () => {
   const handleCreatePredavanje = async () => {
     try {
       // Make a POST request to your database API to create a new predavanje
-      const response = await fetch("your-api-endpoint-for-creating-predavanje", {
+      const response = await fetch("http://127.0.0.1:8000/api/predavanja/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +78,13 @@ const Predavanja = () => {
 
   return (
     <div className="container">
-      {/* ... (rest of the component remains the same) */}
+      <div className="Predmet wrapper-4">
+        <input type="text" name="predmet" value={inputData.predmet} onChange={handleInputChange} placeholder="Predmet" />
+        <input type="text" name="title" value={inputData.title} onChange={handleInputChange} placeholder="Title" />
+        <textarea name="description" value={inputData.description} onChange={handleInputChange} placeholder="Description" />
+        <button onClick={handleCreatePredavanje}>Kreiraj Predavanje</button>
+      </div>
+      <h1 className="H1-title">Predavanja</h1>
       <div className="predmet-card">
         <table>
           <thead>
