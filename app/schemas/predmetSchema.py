@@ -6,10 +6,16 @@ class PredmetBase(BaseModel):
     naziv: str
     godina_studija: int
 
+
 class PredmetInDB(PredmetBase):
-    id:UUID4
+    id: UUID4
+
+
+class PrisustvaPoPredmetima(BaseModel):
+    nazivPredmeta: str
+    odrzanih: int
+    prisutnih: int
+
 
 class Predmet(PredmetBase):
     pass
-
-

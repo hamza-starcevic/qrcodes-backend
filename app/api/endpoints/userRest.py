@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.api.dependencies.dependencies import get_db
 from app.schemas.userSchema import User, UserCreate, UserLogin
 from app.services.userServices import create_user, get_profil_by_korisnik_id, get_users_by_predmet_id, login_user, \
-    get_users, getPrisustvaKorisnika
+    get_users, getPrisustvaKorisnika, getPrisustvaPoPredmetu
 from app.core.security import check_role
 
 router = APIRouter(tags=["Users"])
@@ -31,6 +31,7 @@ def createUser(user: UserCreate, request: Request, db: Session = Depends(get_db)
     status_code=200,
 )
 def login(user: UserLogin, db: Session = Depends(get_db)):
+    print(user)
     loggedUser = login_user(user=user, db=db)
     if user == None:
         raise HTTPException(
@@ -69,3 +70,8 @@ def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
 @router.get("/predavanja/{korisnik_id}")
 def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
     return getPrisustvaKorisnika(userId=korisnik_id, db=db)
+
+
+@router.get("/predavanja/predmet/{korisnik_id}")
+def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
+    return getPrisustvaPoPredmetu(korisnik_id=korisnik_id, db=db)

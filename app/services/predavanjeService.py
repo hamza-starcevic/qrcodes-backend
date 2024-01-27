@@ -90,10 +90,10 @@ def get_all_predavanja(db: Session = Depends(get_db)) -> list[PredavanjeInDB]:
 
 def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_db)) -> PredavanjeKorisnik:
     db_result = PredavanjeKorisnikModel(
-        predavanjeId = content.predavanje_id,
-        korisnikId = content.korisnik_id,
-        imePrezime = content.ime_prezime,
-        nazivPredavanja = content.naziv_predavanja
+        predavanje_id = content.predavanjeId,
+        korisnik_id = content.korisnikId,
+        ime_prezime = content.imePrezime,
+        naziv_predavanja = content.nazivPredavanja
     )
     
     db.add(db_result)

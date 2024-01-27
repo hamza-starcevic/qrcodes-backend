@@ -3,11 +3,13 @@ from app.api.dependencies.dependencies import get_db
 from sqlalchemy.orm import Session
 
 from app.db.models.predavanje import Predavanje
+from app.db.models.predmet import Predmet
 from app.db.models.predmetKorisnik import PredmetKorisnik
 from app.db.models.predavanjeKorisnik import PredavanjeKorisnik
 from app.db.models.user import User
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnikSaPredmetom
 from app.schemas.predmetKorisniciSchema import PredmetKorisnikInDB
+from app.schemas.predmetSchema import PrisustvaPoPredmetima
 from app.schemas.userSchema import User as userSchema
 from app.schemas.userSchema import UserCreate, UserLogin, UserLoggedIn
 import jwt
@@ -43,6 +45,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 def login_user(user: UserLogin, db: Session = Depends(get_db)):
+    print(user)
     email = user.email
     password = user.password
     db_user = db.query(User).filter(User.email == email).first()
@@ -88,15 +91,17 @@ def get_users_by_predmet_id(predmet_id: str, db: Session = Depends(get_db)):
 
 
 def getPrisustvaKorisnika(userId: str, db: Session = Depends(get_db)):
-    prisustva = db.query(PredavanjeKorisnik).filter(PredavanjeKorisnik.korisnikId == userId).all()
+    prisustva = db.query(PredavanjeKorisnik).filter(PredavanjeKorisnik.korisnik_id == userId).all()
     zavrsenaPredavanja = []
     for prisustvo in prisustva:
-        predmet = db.query(Predavanje).filter(Predavanje.predmet_id == prisustvo.predmet_id)
+        predavanje = db.query(Predavanje).filter(Predavanje.id == prisustvo.predavanje_id).first()
+        print(predavanje)
+        predmet = db.query(Predmet).filter(Predmet.id == predavanje.predmet_id).first()
         zavrsenaPredavanja.append(
             PredavanjeKorisnikSaPredmetom(
                 nazivPredmeta=predmet.naziv,
-                brojPredavanja=predmet,
-                datumPredavanja=prisustvo.datumPredavanja
+                brojPredavanja=0,
+                datumPredavanja=predavanje.datumPredavanja
             )
         )
     return zavrsenaPredavanja
@@ -106,3 +111,25 @@ def get_profil_by_korisnik_id(korisnik_id: str, db: Session = Depends(get_db)):
     profil = db.query(User).filter(User.id == korisnik_id).first()
 
     return profil
+
+
+def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
+    predmeti = db.query(PredmetKorisnik).filter(PredmetKorisnik.korisnik_id == korisnik_id).all()
+    result = []
+    for predmet in predmeti:
+        predavanja = db.query(Predavanje).filter(Predavanje.predmet_id == predmet.id).all()
+        countAll = len(predavanja)
+        countPrisutnih = 0
+        for predavanje in predavanja:
+            if len(db.query(PredavanjeKorisnik).filter(
+                    PredavanjeKorisnik.predavanje_id == predavanje.id and PredavanjeKorisnik.korisnik_id == korisnik_id).all()) > 0:
+                countPrisutnih += 1
+        result.append(
+            PrisustvaPoPredmetima(
+                nazivPredmeta=predmet.naziv,
+                odrzanih=countAll,
+                prisutnih=countPrisutnih
+            )
+        )
+    return result
+
