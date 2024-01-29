@@ -21,7 +21,7 @@ const LandingPage = () => {
                         <div className='text-wrapper-2'>
                             <h1 className='big'>Olakšajte praćenje prisustva</h1>
                             <p>Efikasno i tačno praćenje</p>
-                            <a href='/'><button className='bigbutton'>Prijavite se</button></a>
+                            <a href='/prijava'><button className='bigbutton'>Prijavite se</button></a>
                         </div>
                     </div>
                 </div>

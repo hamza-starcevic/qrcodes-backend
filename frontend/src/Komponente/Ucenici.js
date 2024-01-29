@@ -3,15 +3,17 @@ import React, { useState } from 'react';
 const Ucenici = () => {
     const [inputData, setInputData] = useState({
         email: "",
-        ime: "",
-        prezime: "",
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "2002-01-01",
         password: "",
     });
 
     const [displayData, setDisplayData] = useState({
         email: "",
-        ime: "",
-        prezime: "",
+        firstName: "",
+        lastName: "",
+        dateOfBirth: "",
         password: "",
     });
 
@@ -28,7 +30,7 @@ const Ucenici = () => {
 
         try {
             // Add loading state here (optional)
-            const response = await fetch("http://127.0.0.1:8000/api/ucenik/create", {
+            const response = await fetch("https://7a77-147-161-130-104.ngrok-free.app/api/user/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -45,8 +47,9 @@ const Ucenici = () => {
             // Clear input fields and update the state with the received data
             setInputData({
                 email: "",
-                ime: "",
-                prezime: "",
+                firstName: "",
+                lastName: "",
+                dateOfBirth: "",
                 password: "",
             });
 
@@ -61,8 +64,8 @@ const Ucenici = () => {
             <div className="Predmet wrapper-4">
                 {/* Input fields for inputData */}
                 <input type="email" name="email" value={inputData.email} onChange={handleInputChange} placeholder="Email" />
-                <input type="text" name="ime" value={inputData.ime} onChange={handleInputChange} placeholder="Ime" />
-                <input type="text" name="prezime" value={inputData.prezime} onChange={handleInputChange} placeholder="Prezime" />
+                <input type="text" name="firstName" value={inputData.firstName} onChange={handleInputChange} placeholder="firstName" />
+                <input type="text" name="lastName" value={inputData.lastName} onChange={handleInputChange} placeholder="lastName" />
                 <input type="password" name="password" value={inputData.password} onChange={handleInputChange} placeholder="Password" />
                 <button onClick={handleCreateUcenik}>Kreiraj Ucenika</button>
             </div>
@@ -81,8 +84,8 @@ const Ucenici = () => {
                     <tbody>
                         <tr>
                             <td>{displayData.email}</td>
-                            <td>{displayData.ime}</td>
-                            <td>{displayData.prezime}</td>
+                            <td>{displayData.firstName}</td>
+                            <td>{displayData.lastName}</td>
                             <td>{displayData.password}</td>
                         </tr>
                     </tbody>

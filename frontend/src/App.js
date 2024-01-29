@@ -11,19 +11,28 @@ import Ucenici from './Komponente/Ucenici';
 import LandingPage from './Komponente/Landingpage';
 
 function App() {
+  const authToken = localStorage.getItem('authToken');
   return (
     <Router>
       <div className="App">
         <Navbar />
         <Routes>
+          {/* Public routes (accessible without authentication) */}
           <Route path="/prijava" element={<Login />} />
-          <Route path="/predavanja" element={<Predavanja />} />
-          <Route path="/predmet" element={<Predmet />} />
-          <Route path="/prisustvo" element={<Prisustvo />} />
-          <Route path="/profesor" element={<Profesor />} />
-          <Route path="/ucenici" element={<Ucenici />} />
           <Route path="/" element={<LandingPage />} />
 
+          {/* Protected routes (require authentication) */}
+          {authToken ? (
+            <>
+              <Route path="/predavanja" element={<Predavanja />} />
+              <Route path="/predmet" element={<Predmet />} />
+              <Route path="/prisustvo" element={<Prisustvo />} />
+              <Route path="/profesor" element={<Profesor />} />
+              <Route path="/ucenici" element={<Ucenici />} />
+            </>
+          ) : (
+            <Route path="/" element={<LandingPage />} />
+          )}
         </Routes>
       </div>
     </Router>

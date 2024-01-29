@@ -1,49 +1,45 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const backendUrl = 'http://127.0.0.1:8000';
+
+    const backendUrl = 'https://7a77-147-161-130-104.ngrok-free.app';
   
     try {
       const response = await fetch(`${backendUrl}/api/user/login`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: String(username),
-          password: String(password),
+          email: username,
+          password: password,
         }),
-        credentials: 'include',
       });
   
-      if (!response.ok) {
+      /*if (!response.ok) {
         console.error('Authentication failed. Server returned:', response.status, response.statusText);
         return;
-      }
+      }*/
   
       const result = await response.json();
-  
-      if (Array.isArray(result) && result.length > 0) {
-        const user = result[0];
-  
-        const token = user ? user.token : null;
-  
+        const token = result.token;
+        console.log('3');
         // Store the token in localStorage or state as needed
         // Example using localStorage:
         localStorage.setItem('authToken', token);
   
         console.log('Login successful! Token:', token);
+        navigate('/predavanja')
   
         // Add your logic to redirect or perform additional actions after successful login
-      } else {
-        console.error('Authentication failed. Unexpected response:', result);
-      }
+      
     } catch (error) {
       console.error('Error during login:', error);
     }
