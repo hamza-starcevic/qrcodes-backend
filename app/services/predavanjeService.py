@@ -3,6 +3,7 @@ import datetime
 from app.api.dependencies.dependencies import get_db
 from app.db.models.predavanje import Predavanje
 from app.db.models.predavanjeKorisnik import PredavanjeKorisnik as PredavanjeKorisnikModel
+from app.db.models.predmet import Predmet
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnik, PredavanjeKorisnikInDB
 from app.schemas.predavanjeSchema import PredavanjeBase, PredavanjeInDB
 from sqlalchemy.orm import Session
@@ -89,11 +90,14 @@ def get_all_predavanja(db: Session = Depends(get_db)) -> list[PredavanjeInDB]:
     ) for predavanje in db_predavanja]
 
 def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_db)) -> PredavanjeKorisnik:
+    predavanje = db.query(Predavanje).filter(Predavanje.id==content.predavanjeId).first()
+    predmet = db.query(Predmet).filter(Predmet.id==predavanje.predmet_id).first()
+    
     db_result = PredavanjeKorisnikModel(
         predavanje_id = content.predavanjeId,
         korisnik_id = content.korisnikId,
         ime_prezime = content.imePrezime,
-        naziv_predavanja = content.nazivPredavanja
+        naziv_predavanja = predmet.naziv
     )
     
     db.add(db_result)

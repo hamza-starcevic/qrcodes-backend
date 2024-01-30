@@ -117,7 +117,8 @@ def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
     predmeti = db.query(PredmetKorisnik).filter(PredmetKorisnik.korisnik_id == korisnik_id).all()
     result = []
     for predmet in predmeti:
-        predavanja = db.query(Predavanje).filter(Predavanje.predmet_id == predmet.id).all()
+        print(predmet.id)
+        predavanja = db.query(Predavanje).filter(Predavanje.predmet_id == predmet.predmet_id).all()
         countAll = len(predavanja)
         countPrisutnih = 0
         for predavanje in predavanja:
@@ -126,7 +127,7 @@ def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
                 countPrisutnih += 1
         result.append(
             PrisustvaPoPredmetima(
-                nazivPredmeta=predmet.naziv,
+                nazivPredmeta=predmet.naziv_predmeta,
                 odrzanih=countAll,
                 prisutnih=countPrisutnih
             )
