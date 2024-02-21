@@ -12,6 +12,7 @@ from app.services.userServices import (
     get_users,
     getPrisustvaKorisnika,
     getPrisustvaPoPredmetu,
+    validateJwtToken,
 )
 from app.core.security import check_role
 
@@ -64,6 +65,11 @@ def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
 @router.get("/predavanja/predmet/{korisnik_id}")
 def getUserProfile(korisnik_id: str, db: Session = Depends(get_db)):
     return handleResponse(getPrisustvaPoPredmetu(korisnik_id=korisnik_id, db=db))
+
+
+@router.get("/validate/{token}")
+def validateToken(token: str, db: Session = Depends(get_db)):
+    return handleResponse(validateJwtToken(token=token, db=db))
 
 
 def handleResponse(result):

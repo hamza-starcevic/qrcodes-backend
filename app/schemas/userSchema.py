@@ -2,6 +2,10 @@ from pydantic import BaseModel, UUID4
 from datetime import date
 
 
+class AccessToken(BaseModel):
+    token: str
+
+
 class UserBase(BaseModel):
     email: str
     firstName: str

@@ -1,3 +1,4 @@
+import time
 from uuid import uuid4
 
 import bcrypt
@@ -17,7 +18,7 @@ from app.schemas.errorSchema import ErrorBase
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnikSaPredmetom
 from app.schemas.predmetKorisniciSchema import PredmetKorisnikInDB
 from app.schemas.predmetSchema import PrisustvaPoPredmetima
-from app.schemas.userSchema import User as userSchema
+from app.schemas.userSchema import AccessToken, User as userSchema
 from app.schemas.userSchema import UserCreate, UserLogin, UserLoggedIn
 import jwt
 import os
@@ -66,14 +67,18 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
     try:
         email = user.email
         db_user = db.query(User).filter(User.email == email).first()
+        if db_user == None:
+            raise HAAAMUserDoesNotExist("User does not exist")
         decrypted_password = bcrypt.checkpw(
             user.password.encode("utf-8"), db_user.password.encode("utf-8")
         )
         if decrypted_password == False:
-            raise HAAAMUserDoesNotExist("User does not exist")
+            raise HAAAMUserDoesNotExist("Invalid credentials")
 
         token = jwt.encode(
-            {"role": db_user.role}, os.getenv("jwt_secret"), algorithm="HS256"
+            {"role": db_user.role, "exp": time() + 86400},
+            os.getenv("jwt_secret"),
+            algorithm="HS256",
         )
         return UserLoggedIn(
             email=db_user.email,
@@ -208,3 +213,14 @@ def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         return ErrorBase(errorCode=500, msg="Nije moguce dobiti prisustva po predmetu")
+
+
+def validateJwtToken(token: str, db: Session = Depends(get_db)):
+    try:
+        decoded = jwt.decode(token, os.getenv("jwt_secret"), algorithms=["HS256"])
+        return AccessToken(token=token)
+    except jwt.ExpiredSignatureError as e:
+        return ErrorBase(errorCode=401, msg="Token expired")
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=401, msg="Invalid token")
