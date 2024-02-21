@@ -108,9 +108,16 @@ def getPrisustvaKorisnika(userId: str, db: Session = Depends(get_db)):
 
 
 def get_profil_by_korisnik_id(korisnik_id: str, db: Session = Depends(get_db)):
-    profil = db.query(User).filter(User.id == korisnik_id).first()
-
-    return profil
+    db_user = db.query(User).filter(User.id == korisnik_id).first()
+    
+    return UserLoggedIn(
+            email=db_user.email,
+            firstName=db_user.first_name,
+            lastName=db_user.last_name,
+            dateOfBirth=db_user.date_of_birth,
+            token="",
+            id=db_user.id
+        )
 
 
 def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
