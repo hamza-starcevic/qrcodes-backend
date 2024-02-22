@@ -76,7 +76,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
             raise HAAAMUserDoesNotExist("Invalid credentials")
 
         token = jwt.encode(
-            {"role": db_user.role, "exp": time() + 86400},
+            {"role": db_user.role, "exp": time.time() + 86400},
             os.getenv("jwt_secret"),
             algorithm="HS256",
         )
