@@ -16,7 +16,7 @@ router = APIRouter(tags=["Predmeti"])
 def createPredmet(
     predmet: PredmetBase, request: Request, db: Session = Depends(get_db)
 ):
-    return create_predmet(predmet=predmet, db=db)
+    return handleResponse(create_predmet(predmet=predmet, db=db))
 
 
 @router.get("/all", status_code=status.HTTP_200_OK)
