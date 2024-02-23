@@ -59,7 +59,7 @@ def get_predmeti(db: Session = Depends(get_db)):
             )
         return predmetList
     except Exception as e:
-        return ErrorBase(500, "Doslo je do greske prilikom dohvatanja predmeta")
+        return ErrorBase(errorCode=500, msg="Error fetching predmeti")
 
 
 def add_korisnik(content: PK, db: Session = Depends(get_db)):
