@@ -12,7 +12,7 @@ class PredmetInDB(PredmetBase):
 
 
 class PredmetSaProfesorom(PredmetInDB):
-    profesor: list
+    profesor: str
 
 
 class PrisustvaPoPredmetima(BaseModel):

@@ -11,7 +11,7 @@ from app.db.models.predavanje_model import Predavanje
 from app.db.models.predmet_model import Predmet
 from app.db.models.predmetKorisnik_model import PredmetKorisnik
 from app.db.models.predavanjeKorisnik_model import PredavanjeKorisnik
-from app.db.models.user_model import User
+from app.db.models.user_model import User as UserDB
 from app.exceptions.customExceptions import (
     HAAAMUserAlreadyExists,
     HAAAMUserDoesNotExist,
@@ -20,7 +20,7 @@ from app.schemas.errorSchema import ErrorBase
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnikSaPredmetom
 from app.schemas.predmetKorisniciSchema import PredmetKorisnikInDB
 from app.schemas.predmetSchema import PrisustvaPoPredmetima
-from app.schemas.userSchema import AccessToken, User as userSchema
+from app.schemas.userSchema import AccessToken, User as userSchema, UserInDB
 from app.schemas.userSchema import UserCreate, UserLogin, UserLoggedIn
 import jwt
 import os
@@ -36,12 +36,12 @@ load_dotenv()
 
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     try:
-        db_user = db.query(User).filter(User.email == user.email).first()
+        db_user = db.query(UserDB).filter(UserDB.email == user.email).first()
         if db_user:
             raise HAAAMUserAlreadyExists("User already exists")
         hashed_password = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
 
-        db_user = User(
+        db_user = UserDB(
             email=user.email,
             first_name=user.firstName,
             last_name=user.lastName,
@@ -70,7 +70,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 def login_user(user: UserLogin, db: Session = Depends(get_db)):
     try:
         email = user.email
-        db_user = db.query(User).filter(User.email == email).first()
+        db_user = db.query(UserDB).filter(UserDB.email == email).first()
         if db_user == None:
             raise HAAAMUserDoesNotExist("User does not exist")
         decrypted_password = bcrypt.checkpw(
@@ -100,7 +100,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
 
 
 def get_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+    users = db.query(UserDB).all()
     return users
 
 
@@ -164,7 +164,7 @@ def getPrisustvaKorisnika(userId: str, db: Session = Depends(get_db)):
 
 
 def get_profil_by_korisnik_id(korisnik_id: str, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.id == korisnik_id).first()
+    db_user = db.query(UserDB).filter(UserDB.id == korisnik_id).first()
 
     return UserLoggedIn(
         email=db_user.email,
@@ -232,7 +232,7 @@ def validateJwtToken(token: str, db: Session = Depends(get_db)):
 
 def delete_user(id: str, db: Session = Depends(get_db)):
     try:
-        db_user = db.query(User).filter(User.id == id).delete()
+        db_user = db.query(UserDB).filter(UserDB.id == id).delete()
         if db_user == None:
             raise HAAAMUserDoesNotExist("User does not exist")
         db.commit()
@@ -251,14 +251,14 @@ def delete_user(id: str, db: Session = Depends(get_db)):
 
 def get_users_by_role(role: str, db: Session = Depends(get_db)):
     try:
-        users = db.query(User).filter(User.role == role).all()
+        users = db.query(UserDB).filter(UserDB.role == role).all()
 
         if users == None:
             return []
         result = []
         for user in users:
             result.append(
-                userSchema(
+                UserInDB(
                     id=user.id,
                     email=user.email,
                     firstName=user.first_name,
@@ -266,6 +266,7 @@ def get_users_by_role(role: str, db: Session = Depends(get_db)):
                     dateOfBirth=user.date_of_birth,
                 )
             )
+        return result
     except Exception as e:
         print(e)
         return ErrorBase(

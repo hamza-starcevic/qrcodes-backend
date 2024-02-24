@@ -25,7 +25,6 @@ class UserLogin(BaseModel):
 
 class UserInDB(UserBase):
     id: UUID4
-    password: str
 
 
 class UserLoggedIn(UserBase):
