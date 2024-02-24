@@ -2,6 +2,8 @@ import time
 from uuid import uuid4
 
 import bcrypt
+from pydantic import InstanceOf
+from sqlalchemy.exc import IntegrityError
 from app.api.dependencies.dependencies import get_db
 from sqlalchemy.orm import Session
 
@@ -26,6 +28,8 @@ from dotenv import load_dotenv
 
 # from app.schemas.userSchema import User as UserSchema
 from fastapi import Depends
+
+from app.schemas.utilSchema import StatusOk
 
 load_dotenv()
 
@@ -224,3 +228,22 @@ def validateJwtToken(token: str, db: Session = Depends(get_db)):
     except Exception as e:
         print(e)
         return ErrorBase(errorCode=401, msg="Invalid token")
+
+
+def delete_user(id: str, db: Session = Depends(get_db)):
+    try:
+        db_user = db.query(User).filter(User.id == id).delete()
+        if db_user == None:
+            raise HAAAMUserDoesNotExist("User does not exist")
+        db.commit()
+        return StatusOk(status="User deleted")
+    except HAAAMUserDoesNotExist as e:
+        return ErrorBase(errorCode=400, msg=e.msg)
+    except IntegrityError as e:
+        return ErrorBase(
+            errorCode=400,
+            msg="Brisanje nije uspjelo: Korisnik je dodijeljen na jedan od predmeta!",
+        )
+    except Exception as e:
+        print(type(e))
+        return ErrorBase(errorCode=500, msg=e)

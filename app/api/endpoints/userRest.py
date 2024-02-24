@@ -6,6 +6,7 @@ from app.schemas.errorSchema import ErrorBase
 from app.schemas.userSchema import User, UserCreate, UserLoggedIn, UserLogin
 from app.services.userServices import (
     create_user,
+    delete_user,
     get_profil_by_korisnik_id,
     get_users_by_predmet_id,
     login_user,
@@ -80,3 +81,8 @@ def handleResponse(result):
             status_code=result.errorCode,
             detail=result.msg,
         )
+
+
+@router.delete("/delete/{id}")
+def deleteUser(id: str, db: Session = Depends(get_db)):
+    return handleResponse(delete_user(id=id, db=db))
