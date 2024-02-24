@@ -7,11 +7,11 @@ from sqlalchemy.exc import IntegrityError
 from app.api.dependencies.dependencies import get_db
 from sqlalchemy.orm import Session
 
-from app.db.models.predavanje import Predavanje
-from app.db.models.predmet import Predmet
-from app.db.models.predmetKorisnik import PredmetKorisnik
-from app.db.models.predavanjeKorisnik import PredavanjeKorisnik
-from app.db.models.user import User
+from app.db.models.predavanje_model import Predavanje
+from app.db.models.predmet_model import Predmet
+from app.db.models.predmetKorisnik_model import PredmetKorisnik
+from app.db.models.predavanjeKorisnik_model import PredavanjeKorisnik
+from app.db.models.user_model import User
 from app.exceptions.customExceptions import (
     HAAAMUserAlreadyExists,
     HAAAMUserDoesNotExist,
