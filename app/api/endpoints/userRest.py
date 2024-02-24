@@ -9,6 +9,7 @@ from app.services.userServices import (
     delete_user,
     get_profil_by_korisnik_id,
     get_users_by_predmet_id,
+    get_users_by_role,
     login_user,
     get_users,
     getPrisustvaKorisnika,
@@ -86,3 +87,8 @@ def handleResponse(result):
 @router.delete("/delete/{id}")
 def deleteUser(id: str, db: Session = Depends(get_db)):
     return handleResponse(delete_user(id=id, db=db))
+
+
+@router.get("/role/{role}")
+def getUsersByRole(role: str, db: Session = Depends(get_db)):
+    return handleResponse(get_users_by_role(role=role, db=db))

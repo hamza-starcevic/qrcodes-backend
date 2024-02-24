@@ -3,16 +3,16 @@ from sqlalchemy.orm import Session
 from app.db.models.predmet_model import Predmet
 from app.db.models.predmetKorisnik_model import PredmetKorisnik
 from app.exceptions.customExceptions import HAAMGenericError
+from app.schemas import utilSchema
 from app.schemas.errorSchema import ErrorBase
-from app.schemas.predmetKorisniciSchema import (
-    PredmetKorisnik as PK,
-    PredmetKorisnikInDB,
-)
+from app.schemas.predmetKorisniciSchema import PredmetKorisnikCreateDTO
 from app.schemas.predmetSchema import PredmetBase, PredmetInDB, PredmetSaProfesorom
 from dotenv import load_dotenv
 
 # from app.schemas.userSchema import User as UserSchema
 from fastapi import Depends
+
+from app.schemas.userSchema import User
 
 load_dotenv()
 
@@ -62,23 +62,38 @@ def get_predmeti(db: Session = Depends(get_db)):
         return ErrorBase(errorCode=500, msg="Error fetching predmeti")
 
 
-def add_korisnik(content: PK, db: Session = Depends(get_db)):
-    db_result = PredmetKorisnik(
-        korisnik_id=content.korisnik_id,
-        predmet_id=content.predmet_id,
-        naziv_predmeta=content.naziv_predmeta,
-        ime_prezime=content.ime_prezime,
-        role=content.role,
-    )
-    db.add(db_result)
-    db.commit()
-    db.refresh(db_result)
+def add_korisnik(content: PredmetKorisnikCreateDTO, db: Session = Depends(get_db)):
+    try:
+        user = db.get(User, content.korisnik_id)
+        if not user:
+            raise HAAMGenericError("Korisnik ne postoji")
+        predmet = db.get(Predmet, content.predmet_id)
+        if not predmet:
+            raise HAAMGenericError("Predmet ne postoji")
+        db_result = PredmetKorisnik(
+            korisnik_id=content.korisnik_id,
+            predmet_id=content.predmet_id,
+            naziv_predmeta=content.naziv_predmeta,
+            ime_prezime=content.ime_prezime,
+            role=content.role,
+        )
+        db.add(db_result)
+        db.commit()
+        db.refresh(db_result)
 
-    return PredmetKorisnikInDB(
-        id=db_result.id,
-        korisnik_id=db_result.korisnik_id,
-        predmet_id=db_result.predmet_id,
-        naziv_predmeta=db_result.naziv_predmeta,
-        ime_prezime=db_result.ime_prezime,
-        role=db_result.role,
-    )
+        return utilSchema.StatusOk(status="Korisnik uspjesno dodijeljen na predmet")
+    except HAAMGenericError as e:
+        return ErrorBase(errorCode=400, msg=e.msg)
+    except Exception as e:
+        return ErrorBase(
+            errorCode=500, msg="Greska prilikom dodavanja korisnika na predmet"
+        )
+
+
+def delete_predmet(predmet_id: str, db: Session = Depends(get_db)):
+    try:
+        db.query(Predmet).filter(Predmet.id == predmet_id).delete()
+        db.commit()
+        return {"msg": "Predmet obrisan!"}
+    except Exception as e:
+        return ErrorBase(errorCode=500, msg="Error deleting predmet")

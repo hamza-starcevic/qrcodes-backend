@@ -247,3 +247,27 @@ def delete_user(id: str, db: Session = Depends(get_db)):
     except Exception as e:
         print(type(e))
         return ErrorBase(errorCode=500, msg=e)
+
+
+def get_users_by_role(role: str, db: Session = Depends(get_db)):
+    try:
+        users = db.query(User).filter(User.role == role).all()
+
+        if users == None:
+            return []
+        result = []
+        for user in users:
+            result.append(
+                userSchema(
+                    id=user.id,
+                    email=user.email,
+                    firstName=user.first_name,
+                    lastName=user.last_name,
+                    dateOfBirth=user.date_of_birth,
+                )
+            )
+    except Exception as e:
+        print(e)
+        return ErrorBase(
+            errorCode=500, msg="Desio se problem prilikom dohvatanja korisnika po roli"
+        )
