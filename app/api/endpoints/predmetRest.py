@@ -10,6 +10,7 @@ from app.services.predmetService import (
     create_predmet,
     delete_predmet,
     get_predmeti,
+    get_predmeti_by_user_id,
 )
 from app.core.security import check_role
 
@@ -27,6 +28,11 @@ def createPredmet(
 @router.get("/all", status_code=status.HTTP_200_OK)
 def getPredmeti(db: Session = Depends(get_db)):
     return handleResponse(get_predmeti(db=db))
+
+
+@router.get("/{userId}")
+def getPredmetiByUserId(userId: str, db: Session = Depends(get_db)):
+    return handleResponse(get_predmeti_by_user_id(userId=userId, db=db))
 
 
 @router.post("/korisnik", status_code=status.HTTP_200_OK)

@@ -6,6 +6,7 @@ from app.db.models.predavanjeKorisnik_model import (
     PredavanjeKorisnik as PredavanjeKorisnikModel,
 )
 from app.db.models.predmet_model import Predmet
+from app.schemas.errorSchema import ErrorBase
 from app.schemas.predavanjeKorisnikSchema import (
     PredavanjeKorisnik,
     PredavanjeKorisnikInDB,
@@ -28,10 +29,12 @@ load_dotenv()
 def create_predavanje(
     predavanje: PredavanjeBase, db: Session = Depends(get_db)
 ) -> PredavanjeInDB:
+    if predavanje.datumPredavanja is None:
+        predavanje.datumPredavanja = datetime.datetime.now()
     db_predavanje = Predavanje(
         predmet_id=predavanje.predmet_id,
         broj_predavanja=predavanje.broj_predavanja,
-        datumPredavanja=datetime.datetime.now(),
+        datumPredavanja=predavanje.datumPredavanja,
         qrcode="To be generated",
     )
 
@@ -43,6 +46,7 @@ def create_predavanje(
         id=db_predavanje.id,
         predmet_id=db_predavanje.predmet_id,
         broj_predavanja=db_predavanje.broj_predavanja,
+        datumPredavanja=db_predavanje.datumPredavanja,
         status=db_predavanje.status,
         qrcode="To be generated",
     )
@@ -101,6 +105,7 @@ def get_all_predavanja(db: Session = Depends(get_db)) -> list[PredavanjeInDB]:
             predmet_id=predavanje.predmet_id,
             broj_predavanja=predavanje.broj_predavanja,
             status=predavanje.status,
+            datumPredavanja=predavanje.datumPredavanja,
             qrcode=predavanje.qrcode,
         )
         for predavanje in db_predavanja
@@ -133,3 +138,52 @@ def add_user_predavanje(
         imePrezime=db_result.ime_prezime,
         nazivPredavanja=db_result.naziv_predavanja,
     )
+
+
+def get_predavanja_by_predmet_id(predmet_id: str, db: Session = Depends(get_db)):
+    try:
+        predavanja = (
+            db.query(Predavanje).filter(Predavanje.predmet_id == predmet_id).all()
+        )
+        if predavanja is None:
+            return []
+        result = []
+        for predavanje in predavanja:
+            result.append(
+                PredavanjeInDB(
+                    id=predavanje.id,
+                    predmet_id=predavanje.predmet_id,
+                    broj_predavanja=predavanje.broj_predavanja,
+                    status=predavanje.status,
+                    datumPredavanja=predavanje.datumPredavanja,
+                    qrcode=predavanje.qrcode,
+                )
+            )
+        return result
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=500, msg="Error fetching predavanja")
+
+
+def get_prisutni(predavanje_id: str, db: Session = Depends(get_db)):
+    try:
+        prisutni = (
+            db.query(PredavanjeKorisnikModel)
+            .filter(PredavanjeKorisnikModel.predavanje_id == predavanje_id)
+            .all()
+        )
+        prisutni_list = []
+        for prisutan in prisutni:
+            prisutni_list.append(
+                PredavanjeKorisnikInDB(
+                    id=prisutan.id,
+                    predavanjeId=prisutan.predavanje_id,
+                    korisnikId=prisutan.korisnik_id,
+                    imePrezime=prisutan.ime_prezime,
+                    nazivPredavanja=prisutan.naziv_predavanja,
+                )
+            )
+        return prisutni_list
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=500, msg="Error fetching prisutni")

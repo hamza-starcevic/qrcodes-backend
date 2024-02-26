@@ -36,8 +36,8 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return handleResponse(login_user(user=user, db=db))
 
 
-@router.get("/{token}", status_code=200)
-def getUsers(token: str, db: Session = Depends(get_db)):
+@router.get("/all", status_code=200)
+def getUsers(db: Session = Depends(get_db)):
     # if not check_role({"Authorization":token}, roleToBe="admin"):
     #     raise HTTPException(
     #         status_code=status.HTTP_401_UNAUTHORIZED,

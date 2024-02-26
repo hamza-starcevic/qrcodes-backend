@@ -53,7 +53,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_user)
 
-        return userSchema(
+        return UserInDB(
             id=db_user.id,
             email=db_user.email,
             firstName=db_user.first_name,
@@ -90,6 +90,7 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
             lastName=db_user.last_name,
             dateOfBirth=db_user.date_of_birth,
             token=token,
+            role=db_user.role,
             id=db_user.id,
         )
     except HAAAMUserDoesNotExist as e:
@@ -101,7 +102,21 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
 
 def get_users(db: Session = Depends(get_db)):
     users = db.query(UserDB).all()
-    return users
+    result = []
+    for user in users:
+        result.append(
+            UserLoggedIn(
+                email=user.email,
+                firstName=user.first_name,
+                lastName=user.last_name,
+                dateOfBirth=user.date_of_birth,
+                token="",
+                role=user.role,
+                id=user.id,
+            )
+        )
+
+    return result
 
 
 def get_users_by_predmet_id(predmet_id: str, db: Session = Depends(get_db)):
@@ -198,8 +213,8 @@ def getPrisustvaPoPredmetu(korisnik_id: str, db: Session = Depends(get_db)):
                     len(
                         db.query(PredavanjeKorisnik)
                         .filter(
-                            PredavanjeKorisnik.predavanje_id == predavanje.id
-                            and PredavanjeKorisnik.korisnik_id == korisnik_id
+                            PredavanjeKorisnik.predavanje_id == predavanje.id,
+                            PredavanjeKorisnik.korisnik_id == korisnik_id,
                         )
                         .all()
                     )

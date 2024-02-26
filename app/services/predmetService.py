@@ -103,4 +103,29 @@ def delete_predmet(predmet_id: str, db: Session = Depends(get_db)):
         db.commit()
         return {"msg": "Predmet obrisan!"}
     except Exception as e:
+        print(e)
         return ErrorBase(errorCode=500, msg="Error deleting predmet")
+
+
+def get_predmeti_by_user_id(userId: str, db: Session = Depends(get_db)):
+    try:
+        predmeti = (
+            db.query(PredmetKorisnik)
+            .filter(PredmetKorisnik.korisnik_id == userId)
+            .all()
+        )
+        if predmeti is None:
+            return []
+        predmetList = []
+        for predmet in predmeti:
+            predmetList.append(
+                PredmetInDB(
+                    id=predmet.predmet_id,
+                    naziv=predmet.naziv_predmeta,
+                    godinaStudija=0,
+                )
+            )
+        return predmetList
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=500, msg="Error fetching predmeti by user id")
