@@ -12,7 +12,7 @@ class PredavanjeBase(BaseModel):
 
 class PredavanjeInDB(PredavanjeBase):
     id: UUID4
-    datumPredavanja: date
+    datumPredavanja: Optional[date] = None
     qrcode: str
 
 
