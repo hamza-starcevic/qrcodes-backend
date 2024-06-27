@@ -1,9 +1,16 @@
 import datetime
 
 from app.api.dependencies.dependencies import get_db
-from app.db.models.predavanje import Predavanje
-from app.db.models.predavanjeKorisnik import PredavanjeKorisnik as PredavanjeKorisnikModel
-from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnik, PredavanjeKorisnikInDB
+from app.db.models.predavanje_model import Predavanje
+from app.db.models.predavanjeKorisnik_model import (
+    PredavanjeKorisnik as PredavanjeKorisnikModel,
+)
+from app.db.models.predmet_model import Predmet
+from app.schemas.errorSchema import ErrorBase
+from app.schemas.predavanjeKorisnikSchema import (
+    PredavanjeKorisnik,
+    PredavanjeKorisnikInDB,
+)
 from app.schemas.predavanjeSchema import PredavanjeBase, PredavanjeInDB
 from app.schemas.userSchema import User
 from sqlalchemy.orm import Session
@@ -17,28 +24,38 @@ import base64
 from fastapi import Depends, HTTPException
 
 load_dotenv()
-#potrebno napraviti logiku za predavanja 
-def create_predavanje(predavanje: PredavanjeBase, db:Session=Depends(get_db)) -> PredavanjeInDB:
+
+
+# potrebno napraviti logiku za predavanja
+def create_predavanje(
+    predavanje: PredavanjeBase, db: Session = Depends(get_db)
+) -> PredavanjeInDB:
+    if predavanje.datumPredavanja is None:
+        predavanje.datumPredavanja = datetime.datetime.now()
     db_predavanje = Predavanje(
-        predmet_id = predavanje.predmet_id,
-        broj_predavanja = predavanje.broj_predavanja,
-        datumPredavanja = datetime.datetime.now(),
-        qrcode = "To be generated"
+        predmet_id=predavanje.predmet_id,
+        broj_predavanja=predavanje.broj_predavanja,
+        datumPredavanja=predavanje.datumPredavanja,
+        qrcode="To be generated",
     )
-    
+
     db.add(db_predavanje)
     db.commit()
     db.refresh(db_predavanje)
-    
+
     return PredavanjeInDB(
-        id = db_predavanje.id,
-        predmet_id = db_predavanje.predmet_id,
-        broj_predavanja = db_predavanje.broj_predavanja,
-        status = db_predavanje.status,
-        qrcode = "To be generated"
+        id=db_predavanje.id,
+        predmet_id=db_predavanje.predmet_id,
+        broj_predavanja=db_predavanje.broj_predavanja,
+        datumPredavanja=db_predavanje.datumPredavanja,
+        status=db_predavanje.status,
+        qrcode="To be generated",
     )
 
-def generate_qrcode(predavanje_id: str, db: Session = Depends(get_db)) -> PredavanjeInDB:
+
+def generate_qrcode(
+    predavanje_id: str, db: Session = Depends(get_db)
+) -> PredavanjeInDB:
     img = qr.make(predavanje_id)
     buffered = BytesIO()
     img.save(buffered)
@@ -50,16 +67,17 @@ def generate_qrcode(predavanje_id: str, db: Session = Depends(get_db)) -> Predav
         db_predavanje.qrcode = img_base64
         db.commit()
         return PredavanjeInDB(
-        id = db_predavanje.id,
-        predmet_id = db_predavanje.predmet_id,
-        broj_predavanja = db_predavanje.broj_predavanja,
-        status = db_predavanje.status,
-        qrcode = db_predavanje.qrcode
+            id=db_predavanje.id,
+            predmet_id=db_predavanje.predmet_id,
+            broj_predavanja=db_predavanje.broj_predavanja,
+            status=db_predavanje.status,
+            qrcode=db_predavanje.qrcode,
         )
-    
 
 
-def get_predavanje_by_id(predavanje_id: int, db: Session = Depends(get_db)) -> PredavanjeInDB:
+def get_predavanje_by_id(
+    predavanje_id: int, db: Session = Depends(get_db)
+) -> PredavanjeInDB:
     # Query the database for the predavanje with the given ID
     db_predavanje = db.query(Predavanje).filter(Predavanje.id == predavanje_id).first()
 
@@ -69,53 +87,104 @@ def get_predavanje_by_id(predavanje_id: int, db: Session = Depends(get_db)) -> P
 
     # Convert the database model instance to a Pydantic model
     return PredavanjeInDB(
-        id = db_predavanje.id,
-        predmet_id = db_predavanje.predmet_id,
-        broj_predavanja = db_predavanje.broj_predavanja,
-        status = db_predavanje.status,
-        qrcode = db_predavanje.qrcode
+        id=db_predavanje.id,
+        predmet_id=db_predavanje.predmet_id,
+        broj_predavanja=db_predavanje.broj_predavanja,
+        status=db_predavanje.status,
+        qrcode=db_predavanje.qrcode,
     )
+
 
 def get_all_predavanja(db: Session = Depends(get_db)) -> list[PredavanjeInDB]:
     # Query the database for all predavanja
     db_predavanja = db.query(Predavanje).all()
 
     # Convert each database model instance to a Pydantic model
-    return [PredavanjeInDB(
-        id = predavanje.id,
-        predmet_id = predavanje.predmet_id,
-        broj_predavanja = predavanje.broj_predavanja,
-        status = predavanje.status,
-        qrcode = predavanje.qrcode
-    ) for predavanje in db_predavanja]
+    return [
+        PredavanjeInDB(
+            id=predavanje.id,
+            predmet_id=predavanje.predmet_id,
+            broj_predavanja=predavanje.broj_predavanja,
+            status=predavanje.status,
+            datumPredavanja=predavanje.datumPredavanja,
+            qrcode=predavanje.qrcode,
+        )
+        for predavanje in db_predavanja
+    ]
 
-def add_user_predavanje(content: PredavanjeKorisnik ,db: Session = Depends(get_db)) -> PredavanjeKorisnik:
-    db_result = PredavanjeKorisnikModel(
-        predavanjeId = content.predavanje_id,
-        korisnikId = content.korisnik_id,
-        imePrezime = content.ime_prezime,
-        nazivPredavanja = content.naziv_predavanja
+
+def add_user_predavanje(
+    content: PredavanjeKorisnik, db: Session = Depends(get_db)
+) -> PredavanjeKorisnik:
+    predavanje = (
+        db.query(Predavanje).filter(Predavanje.id == content.predavanjeId).first()
     )
-    
+    predmet = db.query(Predmet).filter(Predmet.id == predavanje.predmet_id).first()
+
+    db_result = PredavanjeKorisnikModel(
+        predavanje_id=content.predavanjeId,
+        korisnik_id=content.korisnikId,
+        ime_prezime=content.imePrezime,
+        naziv_predavanja=predmet.naziv,
+    )
+
     db.add(db_result)
     db.commit()
     db.refresh(db_result)
-    
+
     return PredavanjeKorisnikInDB(
         id=db_result.id,
         predavanjeId=db_result.predavanje_id,
         korisnikId=db_result.korisnik_id,
         imePrezime=db_result.ime_prezime,
-        nazivPredavanja=db_result.naziv_predavanja
+        nazivPredavanja=db_result.naziv_predavanja,
     )
 
 
-def lista_prisutnih(predavanje_id: int ,db: Session = Depends(get_db)):
-    listaPredavanje = db.query(PredavanjeKorisnik).filter(PredavanjeKorisnik.predavanjeId == predavanje_id).all()
-    users = []
-    for predavanje_korisnik in listaPredavanje:
-        user = db.query(User).filter(User.id == predavanje_korisnik.korisnik_id).first()
-        if user:
-            users.append(user)
+def get_predavanja_by_predmet_id(predmet_id: str, db: Session = Depends(get_db)):
+    try:
+        predavanja = (
+            db.query(Predavanje).filter(Predavanje.predmet_id == predmet_id).all()
+        )
+        if predavanja is None:
+            return []
+        result = []
+        for predavanje in predavanja:
+            result.append(
+                PredavanjeInDB(
+                    id=predavanje.id,
+                    predmet_id=predavanje.predmet_id,
+                    broj_predavanja=predavanje.broj_predavanja,
+                    status=predavanje.status,
+                    datumPredavanja=predavanje.datumPredavanja,
+                    qrcode=predavanje.qrcode,
+                )
+            )
+        return result
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=500, msg="Error fetching predavanja")
 
-    return users
+
+def get_prisutni(predavanje_id: str, db: Session = Depends(get_db)):
+    try:
+        prisutni = (
+            db.query(PredavanjeKorisnikModel)
+            .filter(PredavanjeKorisnikModel.predavanje_id == predavanje_id)
+            .all()
+        )
+        prisutni_list = []
+        for prisutan in prisutni:
+            prisutni_list.append(
+                PredavanjeKorisnikInDB(
+                    id=prisutan.id,
+                    predavanjeId=prisutan.predavanje_id,
+                    korisnikId=prisutan.korisnik_id,
+                    imePrezime=prisutan.ime_prezime,
+                    nazivPredavanja=prisutan.naziv_predavanja,
+                )
+            )
+        return prisutni_list
+    except Exception as e:
+        print(e)
+        return ErrorBase(errorCode=500, msg="Error fetching prisutni")

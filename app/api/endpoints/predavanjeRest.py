@@ -2,16 +2,26 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.datastructures import Headers
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
+from app.api.endpoints.userRest import handleResponse
 from app.schemas.predavanjeKorisnikSchema import PredavanjeKorisnik
 
 from app.schemas.predavanjeSchema import PredavanjeBase
-from app.services.predavanjeService import add_user_predavanje, create_predavanje, generate_qrcode, get_all_predavanja, get_predavanje_by_id, lista_prisutnih
+from app.services.predavanjeService import (
+    add_user_predavanje,
+    create_predavanje,
+    generate_qrcode,
+    get_all_predavanja,
+    get_predavanja_by_predmet_id,
+    get_predavanje_by_id,
+    get_prisutni,
+)
 from app.api.dependencies.dependencies import get_db
 from app.core.security import check_role
 
 router = APIRouter(tags=["Predavanja"])
 
 load_dotenv()
+
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 def createPredavanje(predavanje: PredavanjeBase, db: Session = Depends(get_db)):
@@ -28,6 +38,7 @@ def createPredavanje(predavanje: PredavanjeBase, db: Session = Depends(get_db)):
     predavanjeSaved = create_predavanje(predavanje, db=db)
     return predavanjeSaved
 
+
 @router.post("/{predavanje_id}/generate/qrcode")
 def generateQRCode(predavanje_id: str, db: Session = Depends(get_db)):
     """
@@ -42,6 +53,7 @@ def generateQRCode(predavanje_id: str, db: Session = Depends(get_db)):
     """
     return generate_qrcode(predavanje_id=predavanje_id, db=db)
 
+
 @router.get("/all")
 def getAllPredavanja(db: Session = Depends(get_db)):
     """
@@ -54,6 +66,7 @@ def getAllPredavanja(db: Session = Depends(get_db)):
         List[PredavanjeInDB]: A list of all Predavanje records in the database.
     """
     return get_all_predavanja(db=db)
+
 
 @router.get("/{predavanje_id}")
 def getPredavanjeById(predavanje_id: str, db: Session = Depends(get_db)):
@@ -69,11 +82,17 @@ def getPredavanjeById(predavanje_id: str, db: Session = Depends(get_db)):
     """
     return get_predavanje_by_id(predavanje_id=predavanje_id, db=db)
 
+
 @router.post("/korisnik")
 def addKorisnikToPredavanje(content: PredavanjeKorisnik, db: Session = Depends(get_db)):
     return add_user_predavanje(content=content, db=db)
 
 
-@router.get("/prisutni/{predavanje_id}")
-def listaPrisustvaPredavanje(predavanje_id: str, db: Session = Depends(get_db)):
-    return lista_prisutnih(predavanje_id=predavanje_id, db=db)
+@router.get("/{predmet_id}/predmet")
+def getPredavanjaByPredmetId(predmet_id: str, db: Session = Depends(get_db)):
+    return handleResponse(get_predavanja_by_predmet_id(predmet_id=predmet_id, db=db))
+
+
+@router.get("/{predavanje_id}/prisutni")
+def getPrisutni(predavanje_id: str, db: Session = Depends(get_db)):
+    return handleResponse(get_prisutni(predavanje_id=predavanje_id, db=db))

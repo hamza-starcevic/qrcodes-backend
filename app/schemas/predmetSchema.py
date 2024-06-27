@@ -4,12 +4,22 @@ from datetime import date
 
 class PredmetBase(BaseModel):
     naziv: str
-    godina_studija: int
+    godinaStudija: int
+
 
 class PredmetInDB(PredmetBase):
-    id:UUID4
+    id: UUID4
+
+
+class PredmetSaProfesorom(PredmetInDB):
+    profesor: str
+
+
+class PrisustvaPoPredmetima(BaseModel):
+    nazivPredmeta: str
+    odrzanih: int
+    prisutnih: int
+
 
 class Predmet(PredmetBase):
     pass
-
-

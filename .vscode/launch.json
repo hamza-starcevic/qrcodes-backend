@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "main:app",
+                "app.main:app",
                 "--reload"
             ],
             "jinja": true,
@@ -23,10 +23,25 @@
             "module": "uvicorn",
             "args": [
                 "app.main:app",
+                "--host",
+                "0.0.0.0",
                 "--reload"
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "Python: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/tests/test_services.py",
+            "args": [
+                "-m",
+                "pytest",
+                "--disable-warnings"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }
