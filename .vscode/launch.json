@@ -29,6 +29,19 @@
             ],
             "jinja": true,
             "justMyCode": true
+        },
+        {
+            "name": "Python: Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app/tests/test_services.py",
+            "args": [
+                "-m",
+                "pytest",
+                "--disable-warnings"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }
